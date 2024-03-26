@@ -1,6 +1,6 @@
 import {
-  integer,
   pgTable,
+  serial,
   uniqueIndex,
   uuid,
   varchar,
@@ -9,7 +9,7 @@ import {
 export const accounts = pgTable(
   'account',
   {
-    id: integer('id').primaryKey(),
+    id: serial('id').primaryKey(),
     uuid: uuid('uuid').unique().defaultRandom(),
     name: varchar('name', { length: 256 }).notNull(),
   },
