@@ -7,3 +7,5 @@ export const accountCategoryOptions = [
   'loan',
   'other',
 ] as const;
+
+export const transactionType = ['credit', 'debit'] as const;

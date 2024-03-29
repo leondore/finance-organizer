@@ -35,7 +35,7 @@ export const users = pgTable(
       .references(() => roles.id),
     firstName: varchar('first_name', { length: 64 }).notNull(),
     lastName: varchar('last_name', { length: 64 }),
-    avatarUrl: text('avatar_url'),
+    avatarUrl: varchar('avatar_url', { length: 256 }),
   },
   (table) => {
     return {
