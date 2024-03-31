@@ -37,10 +37,14 @@ export const institutions = pgTable(
     name: varchar('name', { length: 256 }).notNull(),
     code: varchar('code', { length: 64 }).notNull().unique(),
     logoUrl: varchar('logo_url', { length: 256 }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
   },
   (table) => {
     return {
       codeIdx: uniqueIndex('code_idx').on(table.code),
+      userIdIdx: index('user_id_idx').on(table.userId),
     };
   }
 );
