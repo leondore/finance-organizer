@@ -24,6 +24,7 @@ export const accountCategoryEnum = pgEnum(
 // Models
 export const accountCategories = pgTable('account_categories', {
   id: serial('id').primaryKey(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   name: accountCategoryEnum('category').notNull(),
   description: text('description'),
 });
@@ -73,6 +74,7 @@ export const accounts = pgTable(
   (table) => {
     return {
       userIdIdx: index('user_id_idx').on(table.userId),
+      categoryIdIdx: index('category_id_idx').on(table.categoryId),
     };
   }
 );

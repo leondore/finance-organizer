@@ -6,6 +6,7 @@ import {
   text,
   timestamp,
   uniqueIndex,
+  uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
 
@@ -14,6 +15,7 @@ export const roles = pgTable(
   'roles',
   {
     id: serial('id').primaryKey(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     role: varchar('role', { length: 32 }).notNull().unique(),
   },
   (table) => {
@@ -30,12 +32,13 @@ export const users = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
     email: varchar('email', { length: 256 }).notNull(),
+    password: text('password').notNull(),
     roleId: integer('role_id')
       .notNull()
       .references(() => roles.id),
     firstName: varchar('first_name', { length: 64 }).notNull(),
     lastName: varchar('last_name', { length: 64 }),
-    avatarUrl: varchar('avatar_url', { length: 256 }),
+    avatarId: uuid('avatar_id'),
   },
   (table) => {
     return {

@@ -9,3 +9,5 @@ export const accountCategoryOptions = [
 ] as const;
 
 export const transactionType = ['credit', 'debit'] as const;
+
+export const transactionStatus = ['pending', 'completed', 'cancelled'] as const;

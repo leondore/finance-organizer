@@ -4,13 +4,20 @@ import {
   serial,
   uniqueIndex,
   varchar,
+  text,
+  index,
+  timestamp,
+  uuid,
 } from 'drizzle-orm/pg-core';
+
+import { users } from '@/db/schema';
 
 // Models
 export const currencies = pgTable(
   'currencies',
   {
     id: serial('id').primaryKey(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     name: varchar('name', { length: 256 }).notNull(),
     code: varchar('code', { length: 8 }).notNull().unique(),
     symbol: char('symbol', { length: 8 }),
@@ -18,6 +25,42 @@ export const currencies = pgTable(
   (table) => {
     return {
       codeIdx: uniqueIndex('code_idx').on(table.code),
+    };
+  }
+);
+
+export const tags = pgTable(
+  'tags',
+  {
+    id: serial('id').primaryKey(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+    name: varchar('name', { length: 256 }).notNull(),
+    color: varchar('color', { length: 32 }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+  },
+  (table) => {
+    return {
+      userIdIdx: index('user_id_idx').on(table.userId),
+    };
+  }
+);
+
+export const attachments = pgTable(
+  'attachments',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    name: varchar('name', { length: 256 }).notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+  },
+  (table) => {
+    return {
+      userIdIdx: index('user_id_idx').on(table.userId),
     };
   }
 );
