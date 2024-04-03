@@ -7,13 +7,13 @@ import {
   text,
   timestamp,
   index,
-  uniqueIndex,
   uuid,
   varchar,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 
-import { accountCategoryOptions } from '@/utils';
-import { currencies, users } from '@/db/schema';
+import { currencies, tags, users } from '.';
+import { accountCategoryOptions } from '../../utils';
 
 // Enums
 export const accountCategoryEnum = pgEnum(
@@ -24,7 +24,6 @@ export const accountCategoryEnum = pgEnum(
 // Models
 export const accountCategories = pgTable('account_categories', {
   id: serial('id').primaryKey(),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   name: accountCategoryEnum('category').notNull(),
   description: text('description'),
 });
@@ -36,16 +35,15 @@ export const institutions = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
     name: varchar('name', { length: 256 }).notNull(),
-    code: varchar('code', { length: 64 }).notNull().unique(),
-    logoUrl: varchar('logo_url', { length: 256 }),
+    code: varchar('code', { length: 64 }),
+    logoId: uuid('logo_id'),
     userId: text('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
   },
   (table) => {
     return {
-      codeIdx: uniqueIndex('code_idx').on(table.code),
-      userIdIdx: index('user_id_idx').on(table.userId),
+      userIdIdx: index('institutions_user_id_idx').on(table.userId),
     };
   }
 );
@@ -73,8 +71,36 @@ export const accounts = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('user_id_idx').on(table.userId),
-      categoryIdIdx: index('category_id_idx').on(table.categoryId),
+      userIdIdx: index('accounts_user_id_idx').on(table.userId),
+      categoryIdIdx: index('accounts_category_id_idx').on(table.categoryId),
+    };
+  }
+);
+
+export const accountsToTags = pgTable(
+  'accounts_to_tags',
+  {
+    accountId: uuid('account_id')
+      .notNull()
+      .references(() => accounts.id, { onDelete: 'cascade' }),
+    tagId: integer('tag_id')
+      .notNull()
+      .references(() => tags.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({
+        name: 'accounts_to_tags_pk',
+        columns: [table.userId, table.accountId, table.tagId],
+      }),
+      accountIdIdx: index('accounts_to_tags_account_id_idx').on(
+        table.accountId
+      ),
+      tagIdIdx: index('accounts_to_tags_tag_id_idx').on(table.tagId),
+      userIdIdx: index('accounts_to_tags_user_id_idx').on(table.userId),
     };
   }
 );

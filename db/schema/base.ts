@@ -10,21 +10,34 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
-import { users } from '@/db/schema';
+import { users } from '.';
 
 // Models
 export const currencies = pgTable(
   'currencies',
   {
     id: serial('id').primaryKey(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     name: varchar('name', { length: 256 }).notNull(),
     code: varchar('code', { length: 8 }).notNull().unique(),
     symbol: char('symbol', { length: 8 }),
   },
   (table) => {
     return {
-      codeIdx: uniqueIndex('code_idx').on(table.code),
+      codeIdx: uniqueIndex('currencies_code_idx').on(table.code),
+    };
+  }
+);
+
+export const countries = pgTable(
+  'countries',
+  {
+    id: serial('id').primaryKey(),
+    name: varchar('name', { length: 256 }).notNull(),
+    code: varchar('code', { length: 8 }).notNull().unique(),
+  },
+  (table) => {
+    return {
+      codeIdx: uniqueIndex('countries_code_idx').on(table.code),
     };
   }
 );
@@ -39,11 +52,11 @@ export const tags = pgTable(
     color: varchar('color', { length: 32 }),
     userId: text('user_id')
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: 'cascade' }),
   },
   (table) => {
     return {
-      userIdIdx: index('user_id_idx').on(table.userId),
+      userIdIdx: index('tags_user_id_idx').on(table.userId),
     };
   }
 );
@@ -56,11 +69,11 @@ export const attachments = pgTable(
     name: varchar('name', { length: 256 }).notNull(),
     userId: text('user_id')
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: 'cascade' }),
   },
   (table) => {
     return {
-      userIdIdx: index('user_id_idx').on(table.userId),
+      userIdIdx: index('attachments_user_id_idx').on(table.userId),
     };
   }
 );
