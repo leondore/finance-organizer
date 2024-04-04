@@ -39,7 +39,7 @@ export const transactionCategories = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('transaction_categories_user_id_idx').on(table.userId),
+      userIdIdx: index('trc_user_id_idx').on(table.userId),
     };
   }
 );
@@ -57,7 +57,7 @@ export const providers = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('providers_user_id_idx').on(table.userId),
+      userIdIdx: index('prv_user_id_idx').on(table.userId),
     };
   }
 );
@@ -81,13 +81,9 @@ export const providersToCategories = pgTable(
         name: 'provider_to_category_pk',
         columns: [table.userId, table.providerId, table.categoryId],
       }),
-      providerIdIdx: index('provider_to_category_provider_id_idx').on(
-        table.providerId
-      ),
-      categoryIdIdx: index('provider_to_category_category_id_idx').on(
-        table.categoryId
-      ),
-      userIdIdx: index('provider_to_category_user_id_idx').on(table.userId),
+      providerIdIdx: index('ptc_provider_id_idx').on(table.providerId),
+      categoryIdIdx: index('ptc_category_id_idx').on(table.categoryId),
+      userIdIdx: index('ptc_user_id_idx').on(table.userId),
     };
   }
 );
@@ -124,12 +120,12 @@ export const transactions = pgTable(
   },
   (table) => {
     return {
-      accountIdIdx: index('transactions_account_id_idx').on(table.accountId),
-      dateIdx: index('transactions_date_idx').on(table.date),
-      userIdIdx: index('transactions_user_id_idx').on(table.userId),
-      categoryIdIdx: index('transactions_category_id_idx').on(table.categoryId),
-      providerIdIdx: index('transactions_provider_id_idx').on(table.providerId),
-      currencyIdIdx: index('transactions_currency_id_idx').on(table.currencyId),
+      accountIdIdx: index('trs_account_id_idx').on(table.accountId),
+      dateIdx: index('trs_date_idx').on(table.date),
+      userIdIdx: index('trs_user_id_idx').on(table.userId),
+      categoryIdIdx: index('trs_category_id_idx').on(table.categoryId),
+      providerIdIdx: index('trs_provider_id_idx').on(table.providerId),
+      currencyIdIdx: index('trs_currency_id_idx').on(table.currencyId),
     };
   }
 );
@@ -153,11 +149,9 @@ export const transactionsToTags = pgTable(
         name: 'transaction_to_tag_pk',
         columns: [table.userId, table.transactionId, table.tagId],
       }),
-      transactionIdIdx: index('transactions_to_tags_transaction_id_idx').on(
-        table.transactionId
-      ),
-      tagIdIdx: index('transactions_to_tags_tag_id_idx').on(table.tagId),
-      userIdIdx: index('transactions_to_tags_user_id_idx').on(table.userId),
+      transactionIdIdx: index('ttt_transaction_id_idx').on(table.transactionId),
+      tagIdIdx: index('ttt_tag_id_idx').on(table.tagId),
+      userIdIdx: index('ttt_user_id_idx').on(table.userId),
     };
   }
 );
@@ -181,15 +175,9 @@ export const transactionsToAttachments = pgTable(
         name: 'transaction_to_attachment_pk',
         columns: [table.userId, table.transactionId, table.attachementId],
       }),
-      transactionIdIdx: index(
-        'transactions_to_attachments_transaction_id_idx'
-      ).on(table.transactionId),
-      attachementIdIdx: index(
-        'transactions_to_attachments_attachment_id_idx'
-      ).on(table.attachementId),
-      userIdIdx: index('transactions_to_attachments_user_id_idx').on(
-        table.userId
-      ),
+      transactionIdIdx: index('tta_transaction_id_idx').on(table.transactionId),
+      attachementIdIdx: index('tta_attachment_id_idx').on(table.attachementId),
+      userIdIdx: index('tta_user_id_idx').on(table.userId),
     };
   }
 );
@@ -207,7 +195,7 @@ export const transactionSets = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('transaction_sets_user_id_idx').on(table.userId),
+      userIdIdx: index('tse_user_id_idx').on(table.userId),
     };
   }
 );
@@ -231,15 +219,11 @@ export const transactionSetsToTransactions = pgTable(
         name: 'transaction_set_to_transaction_pk',
         columns: [table.userId, table.transactionSetId, table.transactionId],
       }),
-      transactionSetIdIdx: index(
-        'transaction_sets_to_transactions_transaction_set_id_idx'
-      ).on(table.transactionSetId),
-      transactionIdIdx: index(
-        'transaction_sets_to_transactions_transaction_id_idx'
-      ).on(table.transactionId),
-      userIdIdx: index('transaction_sets_to_transactions_user_id_idx').on(
-        table.userId
+      transactionSetIdIdx: index('tst_transaction_set_id_idx').on(
+        table.transactionSetId
       ),
+      transactionIdIdx: index('tst_transaction_id_idx').on(table.transactionId),
+      userIdIdx: index('tst_user_id_idx').on(table.userId),
     };
   }
 );

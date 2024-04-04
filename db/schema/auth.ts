@@ -22,7 +22,7 @@ export const roles = pgTable(
   },
   (table) => {
     return {
-      roleIdx: uniqueIndex('roles_role_idx').on(table.role),
+      roleIdx: uniqueIndex('rol_role_idx').on(table.role),
     };
   }
 );
@@ -41,7 +41,7 @@ export const users = pgTable(
   },
   (table) => {
     return {
-      emailIdx: uniqueIndex('users_email_idx').on(table.email),
+      emailIdx: uniqueIndex('usr_email_idx').on(table.email),
     };
   }
 );
@@ -77,7 +77,7 @@ export const profiles = pgTable(
         name: 'profile_pk',
         columns: [table.userId],
       }),
-      firstNameLastNameIdx: index('profiles_first_name_last_name_idx').on(
+      firstNameLastNameIdx: index('prf_fname_lname_idx').on(
         table.firstName,
         table.lastName
       ),

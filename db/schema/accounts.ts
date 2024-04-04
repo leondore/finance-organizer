@@ -43,7 +43,7 @@ export const institutions = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('institutions_user_id_idx').on(table.userId),
+      userIdIdx: index('ins_user_id_idx').on(table.userId),
     };
   }
 );
@@ -71,8 +71,8 @@ export const accounts = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('accounts_user_id_idx').on(table.userId),
-      categoryIdIdx: index('accounts_category_id_idx').on(table.categoryId),
+      userIdIdx: index('acc_user_id_idx').on(table.userId),
+      categoryIdIdx: index('acc_category_id_idx').on(table.categoryId),
     };
   }
 );
@@ -96,11 +96,9 @@ export const accountsToTags = pgTable(
         name: 'accounts_to_tags_pk',
         columns: [table.userId, table.accountId, table.tagId],
       }),
-      accountIdIdx: index('accounts_to_tags_account_id_idx').on(
-        table.accountId
-      ),
-      tagIdIdx: index('accounts_to_tags_tag_id_idx').on(table.tagId),
-      userIdIdx: index('accounts_to_tags_user_id_idx').on(table.userId),
+      accountIdIdx: index('att_account_id_idx').on(table.accountId),
+      tagIdIdx: index('att_tag_id_idx').on(table.tagId),
+      userIdIdx: index('att_user_id_idx').on(table.userId),
     };
   }
 );

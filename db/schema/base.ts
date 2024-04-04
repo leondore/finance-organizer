@@ -23,7 +23,7 @@ export const currencies = pgTable(
   },
   (table) => {
     return {
-      codeIdx: uniqueIndex('currencies_code_idx').on(table.code),
+      codeIdx: uniqueIndex('cur_code_idx').on(table.code),
     };
   }
 );
@@ -37,7 +37,7 @@ export const countries = pgTable(
   },
   (table) => {
     return {
-      codeIdx: uniqueIndex('countries_code_idx').on(table.code),
+      codeIdx: uniqueIndex('cnt_code_idx').on(table.code),
     };
   }
 );
@@ -56,7 +56,7 @@ export const tags = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('tags_user_id_idx').on(table.userId),
+      userIdIdx: index('tag_user_id_idx').on(table.userId),
     };
   }
 );
@@ -73,7 +73,7 @@ export const attachments = pgTable(
   },
   (table) => {
     return {
-      userIdIdx: index('attachments_user_id_idx').on(table.userId),
+      userIdIdx: index('atc_user_id_idx').on(table.userId),
     };
   }
 );
