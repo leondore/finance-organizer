@@ -12,12 +12,12 @@ const db = drizzle(client);
 
 async function main() {
   try {
-    console.log('Running migrations...');
+    console.log('Development | Running migrations...');
     await migrate(db, { migrationsFolder: 'db/migrations' });
-    console.log('Migration successful!');
+    console.log('Development | Migration successful!');
     process.exit(0);
   } catch (err) {
-    console.error('Migration failed');
+    console.error('Development | Migration failed');
     console.error(err);
     process.exit(1);
   } finally {
