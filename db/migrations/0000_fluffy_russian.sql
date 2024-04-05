@@ -74,7 +74,9 @@ CREATE TABLE IF NOT EXISTS "roles" (
 CREATE TABLE IF NOT EXISTS "sessions" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
-	"expires_at" timestamp with time zone NOT NULL
+	"expires_at" timestamp with time zone NOT NULL,
+	"ip_address" varchar(64),
+	"user_agent" text
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_settings" (
@@ -174,8 +176,8 @@ CREATE TABLE IF NOT EXISTS "transactions" (
 	"transaction_date" timestamp with time zone DEFAULT now(),
 	"type" "transaction_type" NOT NULL,
 	"status" "transaction_status" DEFAULT 'completed' NOT NULL,
-	"is_template" boolean DEFAULT false NOT NULL,
-	"is_recurring" boolean DEFAULT false NOT NULL,
+	"is_template" smallint DEFAULT 0 NOT NULL,
+	"is_recurring" smallint DEFAULT 0 NOT NULL,
 	"recurring_cron" varchar(256),
 	"recurring_until" timestamp with time zone,
 	"account_id" uuid,

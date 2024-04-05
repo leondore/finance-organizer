@@ -5,7 +5,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const databaseUrl = process.env.DATABASE_URL!;
+const databaseUrl = process.env.NUXT_DATABASE_URL!;
 
 const client = postgres(databaseUrl, { max: 1 });
 const db = drizzle(client);

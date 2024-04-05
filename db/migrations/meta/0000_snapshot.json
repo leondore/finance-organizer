@@ -1,5 +1,5 @@
 {
-  "id": "d958b320-d596-4b97-96b4-688d35aaaed0",
+  "id": "46248b44-0b68-4be8-a4a2-129cc483da12",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -517,6 +517,18 @@
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
+        },
+        "ip_address": {
+          "name": "ip_address",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -1350,17 +1362,17 @@
         },
         "is_template": {
           "name": "is_template",
-          "type": "boolean",
+          "type": "smallint",
           "primaryKey": false,
           "notNull": true,
-          "default": false
+          "default": 0
         },
         "is_recurring": {
           "name": "is_recurring",
-          "type": "boolean",
+          "type": "smallint",
           "primaryKey": false,
           "notNull": true,
-          "default": false
+          "default": 0
         },
         "recurring_cron": {
           "name": "recurring_cron",

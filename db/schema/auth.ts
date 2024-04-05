@@ -55,6 +55,8 @@ export const sessions = pgTable('sessions', {
     withTimezone: true,
     mode: 'date',
   }).notNull(),
+  ipAddress: varchar('ip_address', { length: 64 }),
+  userAgent: text('user_agent'),
 });
 
 export const profiles = pgTable(

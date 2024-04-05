@@ -10,7 +10,7 @@ import {
   serial,
   varchar,
   primaryKey,
-  boolean,
+  smallint,
 } from 'drizzle-orm/pg-core';
 
 import { accounts, attachments, currencies, tags, users } from '.';
@@ -102,8 +102,8 @@ export const transactions = pgTable(
     }).defaultNow(),
     type: transactionTypeEnum('type').notNull(),
     status: transactionStatusEnum('status').notNull().default('completed'),
-    isTemplate: boolean('is_template').notNull().default(false),
-    isRecurring: boolean('is_recurring').notNull().default(false),
+    isTemplate: smallint('is_template').notNull().default(0),
+    isRecurring: smallint('is_recurring').notNull().default(0),
     recurringCron: varchar('recurring_cron', { length: 256 }),
     recurringUntil: timestamp('recurring_until', { withTimezone: true }),
     accountId: uuid('account_id').references(() => accounts.id),
