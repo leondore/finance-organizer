@@ -1,14 +1,15 @@
 import { Lucia } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
+import type { H3EventContext } from 'h3';
 
 import { db } from './db';
 import { users, sessions } from '~/db/schema';
+import { Role } from '../types';
 
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 
 export const auth = new Lucia(adapter, {
   sessionCookie: {
-    name: 'auth_session',
     attributes: {
       secure: !import.meta.dev,
       sameSite: 'lax',
@@ -16,8 +17,8 @@ export const auth = new Lucia(adapter, {
   },
   getSessionAttributes: (attributes) => {
     return {
-      ip_address: attributes.ip_address,
-      user_agent: attributes.user_agent,
+      ipAddress: attributes.ip_address,
+      userAgent: attributes.user_agent,
     };
   },
   getUserAttributes: (attributes) => {
@@ -27,3 +28,7 @@ export const auth = new Lucia(adapter, {
     };
   },
 });
+
+export const isAdmin = (context: H3EventContext) => {
+  return context.user?.role === Role.Admin;
+};
