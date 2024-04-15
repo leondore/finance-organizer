@@ -61,7 +61,7 @@ export const sessions = pgTable('sessions', {
   userAgent: text('user_agent'),
 });
 
-export const email_verification_tokens = pgTable('email_verification_tokens', {
+export const emailVerificationTokens = pgTable('email_verification_tokens', {
   id: serial('id').primaryKey(),
   userId: text('user_id')
     .unique()

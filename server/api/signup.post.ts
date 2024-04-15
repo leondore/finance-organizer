@@ -37,23 +37,31 @@ export default defineEventHandler(async (event) => {
   const userId = generateId(USER_ID_LENGTH);
   const hashedPassword = await new Argon2id().hash(password);
 
-  await db.insert(users).values({
-    id: userId,
-    email,
-    password: hashedPassword,
-    roleId: Role.User,
-  });
+  try {
+    await db.insert(users).values({
+      id: userId,
+      email,
+      password: hashedPassword,
+      roleId: Role.User,
+    });
 
-  const clientUserAgent = getHeader(event, 'User-Agent');
-  const clientIp = getRequestIP(event, { xForwardedFor: true });
+    const clientUserAgent = getHeader(event, 'User-Agent');
+    const clientIp = getRequestIP(event, { xForwardedFor: true });
 
-  const session = await auth.createSession(userId, {
-    ip_address: clientIp,
-    user_agent: clientUserAgent,
-  });
-  appendHeader(
-    event,
-    'Set-Cookie',
-    auth.createSessionCookie(session.id).serialize()
-  );
+    const session = await auth.createSession(userId, {
+      ip_address: clientIp,
+      user_agent: clientUserAgent,
+    });
+    appendHeader(
+      event,
+      'Set-Cookie',
+      auth.createSessionCookie(session.id).serialize()
+    );
+  } catch (error) {
+    throw createError({
+      statusCode: 500,
+      statusMessage:
+        'An error occurred while trying to create the account. Please try again.',
+    });
+  }
 });
