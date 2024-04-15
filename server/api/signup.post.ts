@@ -5,6 +5,7 @@ import { isValidEmail } from '../utils/helpers';
 import { users } from '~/db/schema';
 import { db } from '../utils/db';
 import { Role } from '../types';
+import { handleError } from '../utils/errors';
 
 const PWD_MIN_LENGTH = 8;
 const PWD_MAX_LENGTH = 256;
@@ -58,10 +59,10 @@ export default defineEventHandler(async (event) => {
       auth.createSessionCookie(session.id).serialize()
     );
   } catch (error) {
-    throw createError({
-      statusCode: 500,
-      statusMessage:
-        'An error occurred while trying to create the account. Please try again.',
-    });
+    handleError(
+      event,
+      error,
+      'An error occurred while trying to create the account. Please try again.'
+    );
   }
 });
