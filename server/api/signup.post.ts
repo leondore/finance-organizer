@@ -6,6 +6,10 @@ import { users } from '~/db/schema';
 import { db } from '../utils/db';
 import { Role } from '../types';
 
+const PWD_MIN_LENGTH = 8;
+const PWD_MAX_LENGTH = 256;
+const USER_ID_LENGTH = 15;
+
 export default defineEventHandler(async (event) => {
   const formData = await readFormData(event);
 
@@ -21,8 +25,8 @@ export default defineEventHandler(async (event) => {
   if (
     !password ||
     typeof password !== 'string' ||
-    password.length < 8 ||
-    password.length > 256
+    password.length < PWD_MIN_LENGTH ||
+    password.length > PWD_MAX_LENGTH
   ) {
     throw createError({
       statusCode: 400,
@@ -30,7 +34,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const userId = generateId(15);
+  const userId = generateId(USER_ID_LENGTH);
   const hashedPassword = await new Argon2id().hash(password);
 
   await db.insert(users).values({
