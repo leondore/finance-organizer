@@ -9,12 +9,13 @@ declare module 'lucia' {
   }
 
   interface SessionAttributes {
-    ip_address: string | null;
-    user_agent: string | null;
+    ip_address?: string;
+    user_agent?: string;
   }
 
   interface UserAttributes {
     email: string;
     role: Role;
+    email_verified: boolean;
   }
 }

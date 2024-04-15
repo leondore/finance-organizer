@@ -1,4 +1,5 @@
 import {
+  boolean,
   index,
   integer,
   pgTable,
@@ -33,11 +34,12 @@ export const users = pgTable(
     id: text('id').primaryKey().notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
-    email: varchar('email', { length: 256 }).notNull(),
+    email: varchar('email', { length: 256 }).unique().notNull(),
     password: text('password').notNull(),
     roleId: integer('role_id')
       .notNull()
       .references(() => roles.id),
+    emailVerified: boolean('email_verified').notNull().default(false),
   },
   (table) => {
     return {
@@ -50,13 +52,27 @@ export const sessions = pgTable('sessions', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: 'cascade' }),
   expiresAt: timestamp('expires_at', {
     withTimezone: true,
     mode: 'date',
   }).notNull(),
   ipAddress: varchar('ip_address', { length: 64 }),
   userAgent: text('user_agent'),
+});
+
+export const email_verification_tokens = pgTable('email_verification_tokens', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id')
+    .unique()
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  token: text('token').notNull(),
+  email: varchar('email', { length: 256 }).unique().notNull(),
+  expiresAt: timestamp('expires_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull(),
 });
 
 export const profiles = pgTable(

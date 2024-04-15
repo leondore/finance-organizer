@@ -25,6 +25,7 @@ export const auth = new Lucia(adapter, {
     return {
       email: attributes.email,
       role: attributes.role,
+      emailVerified: attributes.email_verified,
     };
   },
 });
