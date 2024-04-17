@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     databaseUrl: '',
     env: 'development',
+    baseUrl: 'http://localhost:3000',
     attachmentsBucket: '',
     awsRegion: 'us-east-1',
     awsAccessKey: '',
