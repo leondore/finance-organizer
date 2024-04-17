@@ -1,8 +1,10 @@
+import { UserSignup } from '~/types';
+
 import { Argon2id } from 'oslo/password';
 import { generateId } from 'lucia';
 
 import { isValidEmail } from '../utils/helpers';
-import { users } from '~/db/schema';
+import { profiles, users } from '~/db/schema';
 import { db } from '../utils/db';
 import { Role } from '../types';
 import { handleError } from '../utils/errors';
@@ -13,9 +15,9 @@ const PWD_MAX_LENGTH = 256;
 const USER_ID_LENGTH = 15;
 
 export default defineEventHandler(async (event) => {
-  const formData = await readFormData(event);
+  const { email, password, firstName, lastName } =
+    await readBody<UserSignup>(event);
 
-  const email = formData.get('email');
   if (!email || typeof email !== 'string' || !isValidEmail(email)) {
     throw createError({
       statusCode: 400,
@@ -23,7 +25,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const password = formData.get('password');
   if (
     !password ||
     typeof password !== 'string' ||
@@ -40,11 +41,19 @@ export default defineEventHandler(async (event) => {
   const hashedPassword = await new Argon2id().hash(password);
 
   try {
+    // Create a user
     await db.insert(users).values({
       id: userId,
       email,
       password: hashedPassword,
       roleId: Role.User,
+    });
+
+    // Create a profile
+    await db.insert(profiles).values({
+      userId,
+      firstName,
+      lastName,
     });
 
     const emailVerificationToken = await generateEmailVerificationToken(
