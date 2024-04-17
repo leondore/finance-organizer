@@ -13,6 +13,8 @@ import { createDate, TimeSpan } from 'oslo';
 const EMAIL_TOKEN_LENGTH = 8;
 const EMAIL_TOKEN_EXP_HOURS = 8;
 
+const config = useRuntimeConfig();
+
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 
 export const auth = new Lucia(adapter, {
@@ -49,10 +51,7 @@ export const generateEmailVerificationToken = async (
     .delete(emailVerificationTokens)
     .where(eq(emailVerificationTokens.userId, userId));
 
-  const token = generateRandomString(
-    EMAIL_TOKEN_LENGTH,
-    alphabet('0-9', 'A-Z')
-  );
+  const token = generateRandomString(EMAIL_TOKEN_LENGTH, alphabet('0-9'));
 
   await db.insert(emailVerificationTokens).values({
     userId,
@@ -62,4 +61,31 @@ export const generateEmailVerificationToken = async (
   });
 
   return token;
+};
+
+export const sendEmailVerificationToken = async (
+  code: string,
+  email: string,
+  name: string = 'user'
+) => {
+  const verificationEmailBody = `
+    Greetings ${name},
+
+    Your verfication code is ${code}.
+
+    Enter this code within ${config.appName} to verify your email and activate your account.
+
+    Click here ${config.baseUrl}/verify-email to open the email verification screen.
+
+    If you have any questions, please contact us at ${config.public.fromAddress}.
+
+    We're glad you're here!
+  `;
+
+  // Send email
+  return await sendEmail({
+    to: email,
+    subject: 'Please Verify Your Email',
+    body: verificationEmailBody,
+  });
 };

@@ -8,7 +8,10 @@ import { profiles, users } from '~/db/schema';
 import { db } from '../utils/db';
 import { Role } from '../types';
 import { handleError } from '../utils/errors';
-import { generateEmailVerificationToken } from '../utils/auth';
+import {
+  generateEmailVerificationToken,
+  sendEmailVerificationToken,
+} from '../utils/auth';
 
 const PWD_MIN_LENGTH = 8;
 const PWD_MAX_LENGTH = 256;
@@ -60,7 +63,7 @@ export default defineEventHandler(async (event) => {
       userId,
       email
     );
-    // TODO: Send email verification email
+    await sendEmailVerificationToken(emailVerificationToken, email, firstName);
 
     const clientUserAgent = getHeader(event, 'User-Agent');
     const clientIp = getRequestIP(event, { xForwardedFor: true });
