@@ -1,5 +1,12 @@
 import { H3Error, H3Event } from 'h3';
 
+export class ValidationError extends H3Error {
+  constructor(field: string) {
+    super(`Invalid value for field: ${field}`);
+    this.statusCode = 400;
+  }
+}
+
 export function handleError(
   event: H3Event,
   err: unknown,

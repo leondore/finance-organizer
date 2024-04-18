@@ -7,7 +7,7 @@ import { isValidEmail } from '../utils/helpers';
 import { profiles, users } from '~/db/schema';
 import { db } from '../utils/db';
 import { Role } from '../types';
-import { handleError } from '../utils/errors';
+import { handleError, ValidationError } from '../utils/errors';
 import {
   generateEmailVerificationToken,
   sendEmailVerificationToken,
@@ -22,10 +22,7 @@ export default defineEventHandler(async (event) => {
     await readBody<UserSignup>(event);
 
   if (!email || typeof email !== 'string' || !isValidEmail(email)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid email address',
-    });
+    throw new ValidationError('Email Address');
   }
 
   if (
@@ -34,10 +31,7 @@ export default defineEventHandler(async (event) => {
     password.length < PWD_MIN_LENGTH ||
     password.length > PWD_MAX_LENGTH
   ) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Invalid password',
-    });
+    throw new ValidationError('Password');
   }
 
   const userId = generateId(USER_ID_LENGTH);
@@ -77,6 +71,8 @@ export default defineEventHandler(async (event) => {
       'Set-Cookie',
       auth.createSessionCookie(session.id).serialize()
     );
+
+    setResponseStatus(event, 201, 'User created');
   } catch (error) {
     handleError(
       event,
