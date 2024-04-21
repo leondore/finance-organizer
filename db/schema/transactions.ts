@@ -227,3 +227,59 @@ export const transactionSetsToTransactions = pgTable(
     };
   }
 );
+
+export const budgets = pgTable(
+  'budgets',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+    name: varchar('name', { length: 256 }).notNull(),
+    amount: doublePrecision('amount').notNull(),
+    startDate: timestamp('start_date', { withTimezone: true }).defaultNow(),
+    endDate: timestamp('end_date', { withTimezone: true }),
+    active: smallint('active').notNull().default(1),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    categoryId: integer('category_id')
+      .notNull()
+      .references(() => transactionCategories.id),
+    currencyId: integer('currency_id')
+      .notNull()
+      .references(() => currencies.id),
+    accountId: uuid('account_id').references(() => accounts.id),
+  },
+  (table) => {
+    return {
+      userIdIdx: index('bud_user_id_idx').on(table.userId),
+      accountIdIdx: index('bud_account_id_idx').on(table.accountId),
+    };
+  }
+);
+
+export const budgetsToTransactions = pgTable(
+  'budgets_to_transactions',
+  {
+    budgetId: uuid('budget_id')
+      .notNull()
+      .references(() => budgets.id, { onDelete: 'cascade' }),
+    transactionId: uuid('transaction_id')
+      .notNull()
+      .references(() => transactions.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({
+        name: 'budget_to_transaction_pk',
+        columns: [table.userId, table.budgetId, table.transactionId],
+      }),
+      budgetIdIdx: index('btt_budget_id_idx').on(table.budgetId),
+      transactionIdIdx: index('btt_transaction_id_idx').on(table.transactionId),
+      userIdIdx: index('btt_user_id_idx').on(table.userId),
+    };
+  }
+);
