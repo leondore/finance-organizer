@@ -1,6 +1,6 @@
 import type { H3EventContext } from 'h3';
 
-import { Lucia } from 'lucia';
+import { Lucia, SessionAttributes, UserAttributes } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { eq } from 'drizzle-orm';
 
@@ -15,45 +15,58 @@ const EMAIL_TOKEN_EXP_HOURS = 8;
 
 const config = useRuntimeConfig();
 
-const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
-
-export const auth = new Lucia(adapter, {
+const authHandlerParams = {
   sessionCookie: {
     attributes: {
       secure: !import.meta.dev,
       sameSite: 'lax',
     },
   },
-  getSessionAttributes: (attributes) => {
+  getSessionAttributes: (attributes: SessionAttributes) => {
     return {
       ipAddress: attributes.ipAddress,
       userAgent: attributes.userAgent,
     };
   },
-  getUserAttributes: (attributes) => {
+  getUserAttributes: (attributes: UserAttributes) => {
     return {
       email: attributes.email,
       role: attributes.role,
       emailVerified: attributes.emailVerified,
     };
   },
-});
+} as const;
+
+const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
+
+export const auth = new Lucia(adapter, authHandlerParams);
 
 export const isAdmin = (context: H3EventContext) => {
   return context.user?.role === Role.Admin;
 };
 
+export const generateAuthHandler = (
+  database: typeof db
+): Lucia<
+  ReturnType<(typeof authHandlerParams)['getSessionAttributes']>,
+  ReturnType<(typeof authHandlerParams)['getUserAttributes']>
+> => {
+  const adapter = new DrizzlePostgreSQLAdapter(database, sessions, users);
+  return new Lucia(adapter, authHandlerParams);
+};
+
 export const generateEmailVerificationToken = async (
   userId: string,
-  email: string
+  email: string,
+  database: typeof db = db
 ): Promise<string> => {
-  await db
+  await database
     .delete(emailVerificationTokens)
     .where(eq(emailVerificationTokens.userId, userId));
 
   const token = generateRandomString(EMAIL_TOKEN_LENGTH, alphabet('0-9'));
 
-  await db.insert(emailVerificationTokens).values({
+  await database.insert(emailVerificationTokens).values({
     userId,
     token,
     email,

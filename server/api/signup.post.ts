@@ -9,6 +9,7 @@ import { db } from '../utils/db';
 import { Role } from '../types';
 import { handleError, ValidationError } from '../utils/errors';
 import {
+  generateAuthHandler,
   generateEmailVerificationToken,
   sendEmailVerificationToken,
 } from '../utils/auth';
@@ -34,54 +35,54 @@ export default defineEventHandler(async (event) => {
     throw new ValidationError('Password');
   }
 
-  if (!firstName || typeof firstName !== 'string' || !firstName.length) {
+  if (!firstName || typeof firstName !== 'string') {
     throw new ValidationError('First Name');
   }
 
   const userId = generateId(USER_ID_LENGTH);
   const hashedPassword = await new Argon2id().hash(password);
 
-  try {
-    // Create a user
-    await db.insert(users).values({
-      id: userId,
-      email,
-      password: hashedPassword,
-      roleId: Role.User,
-    });
+  await db.transaction(async (tx) => {
+    try {
+      // Create a user
+      await tx.insert(users).values({
+        id: userId,
+        email,
+        password: hashedPassword,
+        roleId: Role.User,
+      });
 
-    // Create a profile
-    await db.insert(profiles).values({
-      userId,
-      firstName,
-      lastName,
-    });
+      // Create a profile
+      await tx.insert(profiles).values({
+        userId,
+        firstName,
+        lastName,
+      });
 
-    const emailVerificationToken = await generateEmailVerificationToken(
-      userId,
-      email
-    );
-    //await sendEmailVerificationToken(emailVerificationToken, email, firstName);
+      const emailVerificationToken = await generateEmailVerificationToken(
+        userId,
+        email,
+        tx
+      );
+      //await sendEmailVerificationToken(emailVerificationToken, email, firstName);
 
-    const clientUserAgent = getHeader(event, 'User-Agent');
-    const clientIp = getRequestIP(event, { xForwardedFor: true });
+      const clientUserAgent = getHeader(event, 'User-Agent');
+      const clientIp = getRequestIP(event, { xForwardedFor: true });
 
-    const session = await auth.createSession(userId, {
-      ipAddress: clientIp,
-      userAgent: clientUserAgent,
-    });
-    appendHeader(
-      event,
-      'Set-Cookie',
-      auth.createSessionCookie(session.id).serialize()
-    );
+      const auth = generateAuthHandler(tx);
+      const session = await auth.createSession(userId, {
+        ipAddress: clientIp,
+        userAgent: clientUserAgent,
+      });
+      appendHeader(
+        event,
+        'Set-Cookie',
+        auth.createSessionCookie(session.id).serialize()
+      );
 
-    setResponseStatus(event, 201, 'User created');
-  } catch (error) {
-    handleError(
-      event,
-      error,
-      'An error occurred while trying to create the account. Please try again.'
-    );
-  }
+      setResponseStatus(event, 201, 'User created');
+    } catch (error) {
+      throw handleError(error, 'Failed to create user.');
+    }
+  });
 });
