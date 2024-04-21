@@ -34,6 +34,10 @@ export default defineEventHandler(async (event) => {
     throw new ValidationError('Password');
   }
 
+  if (!firstName || typeof firstName !== 'string' || !firstName.length) {
+    throw new ValidationError('First Name');
+  }
+
   const userId = generateId(USER_ID_LENGTH);
   const hashedPassword = await new Argon2id().hash(password);
 
@@ -57,14 +61,14 @@ export default defineEventHandler(async (event) => {
       userId,
       email
     );
-    await sendEmailVerificationToken(emailVerificationToken, email, firstName);
+    //await sendEmailVerificationToken(emailVerificationToken, email, firstName);
 
     const clientUserAgent = getHeader(event, 'User-Agent');
     const clientIp = getRequestIP(event, { xForwardedFor: true });
 
     const session = await auth.createSession(userId, {
-      ip_address: clientIp,
-      user_agent: clientUserAgent,
+      ipAddress: clientIp,
+      userAgent: clientUserAgent,
     });
     appendHeader(
       event,

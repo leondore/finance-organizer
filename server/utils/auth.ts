@@ -26,15 +26,15 @@ export const auth = new Lucia(adapter, {
   },
   getSessionAttributes: (attributes) => {
     return {
-      ipAddress: attributes.ip_address,
-      userAgent: attributes.user_agent,
+      ipAddress: attributes.ipAddress,
+      userAgent: attributes.userAgent,
     };
   },
   getUserAttributes: (attributes) => {
     return {
       email: attributes.email,
       role: attributes.role,
-      emailVerified: attributes.email_verified,
+      emailVerified: attributes.emailVerified,
     };
   },
 });
