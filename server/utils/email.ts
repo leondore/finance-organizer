@@ -50,7 +50,7 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
     await client.send(params);
   } catch (e) {
     // TODO: Log error to a logging service and create a notification
-    console.error('Failed to send email.');
+    console.error(`Failed to send email. ${e}`);
   } finally {
     client.destroy();
   }

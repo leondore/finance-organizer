@@ -64,7 +64,11 @@ export default defineEventHandler(async (event) => {
         email,
         tx
       );
-      //await sendEmailVerificationToken(emailVerificationToken, email, firstName);
+      await sendEmailVerificationToken(
+        emailVerificationToken,
+        email,
+        firstName
+      );
 
       const clientUserAgent = getHeader(event, 'User-Agent');
       const clientIp = getRequestIP(event, { xForwardedFor: true });
