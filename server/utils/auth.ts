@@ -1,14 +1,14 @@
 import type { H3EventContext } from 'h3';
 
-import { Lucia, SessionAttributes, UserAttributes } from 'lucia';
+import { Lucia, SessionAttributes, User, UserAttributes } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { eq } from 'drizzle-orm';
+import { alphabet, generateRandomString } from 'oslo/crypto';
+import { createDate, isWithinExpirationDate, TimeSpan } from 'oslo';
 
 import { db } from './db';
 import { users, sessions, emailVerificationTokens } from '~/db/schema';
 import { Role } from '../types';
-import { alphabet, generateRandomString } from 'oslo/crypto';
-import { createDate, TimeSpan } from 'oslo';
 
 const EMAIL_TOKEN_LENGTH = 8;
 const EMAIL_TOKEN_EXP_HOURS = 8;
@@ -101,4 +101,32 @@ export const sendEmailVerificationToken = async (
     subject: 'Please Verify Your Email',
     body: verificationEmailBody,
   });
+};
+
+export const verifyVerficationToken = async (
+  user: User,
+  token: string
+): Promise<boolean> => {
+  const [dbToken] = await db
+    .select()
+    .from(emailVerificationTokens)
+    .where(eq(emailVerificationTokens.userId, user.id));
+
+  if (!dbToken || dbToken.token !== token) {
+    return false;
+  }
+
+  await db
+    .delete(emailVerificationTokens)
+    .where(eq(emailVerificationTokens.userId, user.id));
+
+  if (!isWithinExpirationDate(dbToken.expiresAt)) {
+    return false;
+  }
+
+  if (dbToken.email !== user.email) {
+    return false;
+  }
+
+  return true;
 };

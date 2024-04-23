@@ -9,14 +9,9 @@ export class ValidationError extends H3Error {
 
 export function handleError(
   err: unknown,
-  prefix: string = 'Internal Server Error'
+  msg: string = 'Internal Server Error'
 ) {
-  let message = prefix;
   let code = 500;
-
-  if (err instanceof Error) {
-    message += ` Full error message: ${err.message}`;
-  }
 
   if (err instanceof H3Error) {
     code = err.statusCode;
@@ -24,6 +19,7 @@ export function handleError(
 
   return createError({
     status: code,
-    statusMessage: message,
+    statusMessage: msg,
+    message: err instanceof Error ? err.message : String(err),
   });
 }
