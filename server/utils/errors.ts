@@ -7,6 +7,13 @@ export class ValidationError extends H3Error {
   }
 }
 
+export class UnauthorizedError extends H3Error {
+  constructor() {
+    super('Unauthorized');
+    this.statusCode = 401;
+  }
+}
+
 export function handleError(
   err: unknown,
   msg: string = 'Internal Server Error'

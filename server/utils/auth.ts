@@ -88,7 +88,7 @@ export const sendEmailVerificationToken = async (
 
     Enter this code within ${config.appName} to verify your email and activate your account.
 
-    Click here ${config.baseUrl}/verify-email to open the email verification screen.
+    Click here ${config.baseUrl}/email-verification to open the email verification screen.
 
     If you have any questions, please contact us at ${config.public.fromAddress}.
 
