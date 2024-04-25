@@ -12,6 +12,7 @@ import {
   generateAuthHandler,
   generateEmailVerificationToken,
   sendEmailVerificationToken,
+  userMeta,
 } from '../utils/auth';
 
 const PWD_MIN_LENGTH = 8;
@@ -70,8 +71,7 @@ export default defineEventHandler(async (event) => {
         firstName
       );
 
-      const clientUserAgent = getHeader(event, 'User-Agent');
-      const clientIp = getRequestIP(event, { xForwardedFor: true });
+      const { clientUserAgent, clientIp } = userMeta(event);
 
       const auth = generateAuthHandler(tx);
       const session = await auth.createSession(userId, {

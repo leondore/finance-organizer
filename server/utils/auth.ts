@@ -1,4 +1,4 @@
-import type { H3EventContext } from 'h3';
+import type { H3Event, H3EventContext } from 'h3';
 
 import { Lucia, SessionAttributes, User, UserAttributes } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
@@ -43,6 +43,15 @@ export const auth = new Lucia(adapter, authHandlerParams);
 
 export const isAdmin = (context: H3EventContext) => {
   return context.user?.role === Role.Admin;
+};
+
+export const userMeta = (
+  event: H3Event
+): { clientUserAgent: string | undefined; clientIp: string | undefined } => {
+  const clientUserAgent = getHeader(event, 'User-Agent');
+  const clientIp = getRequestIP(event, { xForwardedFor: true });
+
+  return { clientUserAgent, clientIp };
 };
 
 export const generateAuthHandler = (
@@ -107,26 +116,30 @@ export const verifyVerficationToken = async (
   user: User,
   token: string
 ): Promise<boolean> => {
-  const [dbToken] = await db
-    .select()
-    .from(emailVerificationTokens)
-    .where(eq(emailVerificationTokens.userId, user.id));
+  try {
+    const [dbToken] = await db
+      .select()
+      .from(emailVerificationTokens)
+      .where(eq(emailVerificationTokens.userId, user.id));
 
-  if (!dbToken || dbToken.token !== token) {
+    if (!dbToken || dbToken.token !== token) {
+      return false;
+    }
+
+    await db
+      .delete(emailVerificationTokens)
+      .where(eq(emailVerificationTokens.userId, user.id));
+
+    if (!isWithinExpirationDate(dbToken.expiresAt)) {
+      return false;
+    }
+
+    if (dbToken.email !== user.email) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
     return false;
   }
-
-  await db
-    .delete(emailVerificationTokens)
-    .where(eq(emailVerificationTokens.userId, user.id));
-
-  if (!isWithinExpirationDate(dbToken.expiresAt)) {
-    return false;
-  }
-
-  if (dbToken.email !== user.email) {
-    return false;
-  }
-
-  return true;
 };

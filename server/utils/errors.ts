@@ -2,7 +2,7 @@ import { H3Error } from 'h3';
 
 export class ValidationError extends H3Error {
   constructor(field: string) {
-    super(`Invalid value for field: ${field}`);
+    super(`Invalid value: ${field}`);
     this.statusCode = 400;
   }
 }
