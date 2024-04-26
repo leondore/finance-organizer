@@ -45,6 +45,10 @@ export const isAdmin = (context: H3EventContext) => {
   return context.user?.role === Role.Admin;
 };
 
+export const isEmailVerified = (context: H3EventContext) => {
+  return !!context.user?.emailVerified;
+};
+
 export const userMeta = (
   event: H3Event
 ): { clientUserAgent: string | undefined; clientIp: string | undefined } => {
