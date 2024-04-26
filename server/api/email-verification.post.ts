@@ -41,6 +41,4 @@ export default defineEventHandler(async (event) => {
     'Set-Cookie',
     auth.createSessionCookie(session.id).serialize()
   );
-
-  return sendRedirect(event, '/');
 });

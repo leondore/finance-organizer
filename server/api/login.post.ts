@@ -48,6 +48,4 @@ export default defineEventHandler(async (event) => {
     'Set-Cookie',
     auth.createSessionCookie(session.id).serialize()
   );
-
-  setResponseStatus(event, StatusCode.OK, 'Login Successful');
 });
