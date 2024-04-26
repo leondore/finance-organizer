@@ -5,6 +5,7 @@ import { Argon2id } from 'oslo/password';
 
 import { users } from '~/db/schema';
 import { userMeta } from '../utils/auth';
+import { StatusCode } from '../types';
 
 export default defineEventHandler(async (event) => {
   const { email, password } = await readBody<UserLogin>(event);
@@ -23,7 +24,7 @@ export default defineEventHandler(async (event) => {
     .where(eq(users.email, email));
   if (!user) {
     throw createError({
-      statusCode: 400,
+      statusCode: StatusCode.BadRequest,
       statusMessage: 'Invalid email or password',
     });
   }
@@ -31,7 +32,7 @@ export default defineEventHandler(async (event) => {
   const isValidPassword = await new Argon2id().verify(user.password, password);
   if (!isValidPassword) {
     throw createError({
-      statusCode: 400,
+      statusCode: StatusCode.BadRequest,
       statusMessage: 'Invalid email or password',
     });
   }
@@ -48,5 +49,5 @@ export default defineEventHandler(async (event) => {
     auth.createSessionCookie(session.id).serialize()
   );
 
-  setResponseStatus(event, 200, 'Login Successful');
+  setResponseStatus(event, StatusCode.OK, 'Login Successful');
 });

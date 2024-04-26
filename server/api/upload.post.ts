@@ -1,4 +1,5 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { StatusCode } from '../types';
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
@@ -23,6 +24,6 @@ export default defineEventHandler(async (event) => {
     console.error(err);
   }
 
-  setResponseStatus(event, 201, 'OK');
+  setResponseStatus(event, StatusCode.Created, 'OK');
   return;
 });

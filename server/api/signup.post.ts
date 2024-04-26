@@ -6,7 +6,7 @@ import { generateId } from 'lucia';
 import { isValidEmail } from '../utils/helpers';
 import { profiles, users } from '~/db/schema';
 import { db } from '../utils/db';
-import { Role } from '../types';
+import { Role, StatusCode } from '../types';
 import { handleError, ValidationError } from '../utils/errors';
 import {
   generateAuthHandler,
@@ -84,7 +84,7 @@ export default defineEventHandler(async (event) => {
         auth.createSessionCookie(session.id).serialize()
       );
 
-      setResponseStatus(event, 201, 'User created');
+      setResponseStatus(event, StatusCode.Created, 'User created');
     } catch (error) {
       throw handleError(error, 'Failed to create user.');
     }

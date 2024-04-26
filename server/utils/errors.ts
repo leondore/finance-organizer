@@ -1,16 +1,17 @@
 import { H3Error } from 'h3';
+import { StatusCode } from '../types';
 
 export class ValidationError extends H3Error {
   constructor(field: string) {
     super(`Invalid value: ${field}`);
-    this.statusCode = 400;
+    this.statusCode = StatusCode.BadRequest;
   }
 }
 
 export class UnauthorizedError extends H3Error {
   constructor() {
     super('Unauthorized');
-    this.statusCode = 401;
+    this.statusCode = StatusCode.Unauthorized;
   }
 }
 
@@ -18,7 +19,7 @@ export function handleError(
   err: unknown,
   msg: string = 'Internal Server Error'
 ) {
-  let code = 500;
+  let code = StatusCode.InternalServerError;
 
   if (err instanceof H3Error) {
     code = err.statusCode;
