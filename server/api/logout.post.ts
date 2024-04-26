@@ -7,4 +7,11 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'No active session',
     });
   }
+
+  await auth.invalidateSession(event.context.session.id);
+  appendHeader(
+    event,
+    'Set-Cookie',
+    auth.createBlankSessionCookie().serialize()
+  );
 });
