@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
     await readBody<UserSignup>(event);
 
   if (!email || typeof email !== 'string' || !isValidEmail(email)) {
-    throw new ValidationError('Email Address');
+    throw ValidationError('Email Address');
   }
 
   if (
@@ -33,11 +33,11 @@ export default defineEventHandler(async (event) => {
     password.length < PWD_MIN_LENGTH ||
     password.length > PWD_MAX_LENGTH
   ) {
-    throw new ValidationError('Password');
+    throw ValidationError('Password');
   }
 
   if (!firstName || typeof firstName !== 'string') {
-    throw new ValidationError('First Name');
+    throw ValidationError('First Name');
   }
 
   const userId = generateId(USER_ID_LENGTH);

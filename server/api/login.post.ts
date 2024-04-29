@@ -11,11 +11,11 @@ export default defineEventHandler(async (event) => {
   const { email, password } = await readBody<UserLogin>(event);
 
   if (!email || typeof email !== 'string') {
-    throw new ValidationError('Email Address');
+    throw ValidationError('Email Address');
   }
 
   if (!password || typeof password !== 'string') {
-    throw new ValidationError('Password');
+    throw ValidationError('Password');
   }
 
   const [user] = await db
@@ -48,4 +48,6 @@ export default defineEventHandler(async (event) => {
     'Set-Cookie',
     auth.createSessionCookie(session.id).serialize()
   );
+
+  await auth.deleteExpiredSessions();
 });

@@ -1,19 +1,24 @@
 import { H3Error } from 'h3';
 import { StatusCode } from '../types';
 
-export class ValidationError extends H3Error {
-  constructor(field: string) {
-    super(`Invalid value: ${field}`);
-    this.statusCode = StatusCode.BadRequest;
-  }
-}
+export const ValidationError = (field: string): H3Error => {
+  return createError({
+    statusCode: StatusCode.BadRequest,
+    statusMessage: `Invalid value: ${field}`,
+  });
+};
 
-export class UnauthorizedError extends H3Error {
-  constructor() {
-    super('Unauthorized');
-    this.statusCode = StatusCode.Unauthorized;
+export const UnauthorizedError = (err?: unknown): H3Error => {
+  let message = 'Unauthorized';
+  if (err instanceof H3Error) {
+    message = message + ': ' + err.message;
   }
-}
+
+  return createError({
+    statusCode: StatusCode.Unauthorized,
+    statusMessage: message,
+  });
+};
 
 export function handleError(
   err: unknown,

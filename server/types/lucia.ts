@@ -15,7 +15,7 @@ declare module 'lucia' {
 
   interface UserAttributes {
     email: string;
-    role: Role;
+    roleId: Role;
     emailVerified: boolean;
   }
 }

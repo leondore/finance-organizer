@@ -31,7 +31,7 @@ const authHandlerParams = {
   getUserAttributes: (attributes: UserAttributes) => {
     return {
       email: attributes.email,
-      role: attributes.role,
+      role: attributes.roleId,
       emailVerified: attributes.emailVerified,
     };
   },
