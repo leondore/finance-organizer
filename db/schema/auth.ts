@@ -127,13 +127,20 @@ export const userSettings = pgTable(
 );
 
 // Zod Schemas
-const selectUserSchema = createSelectSchema(users).omit({
+const selectUserSchema = createSelectSchema(users, {
+  id: (schema) => schema.id.optional(),
+}).omit({
   password: true,
-  updatedAt: true,
   roleId: true,
 });
 const selectRoleSchema = createSelectSchema(roles);
-const userSchema = selectUserSchema.merge(z.object({ role: selectRoleSchema }));
+const selectProfileSchema = createSelectSchema(profiles).pick({
+  firstName: true,
+  lastName: true,
+});
+const userSchema = selectUserSchema.merge(
+  z.object({ role: selectRoleSchema, name: selectProfileSchema })
+);
 
 // Types
 export type User = z.infer<typeof userSchema>;
