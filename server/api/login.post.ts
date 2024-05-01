@@ -6,6 +6,7 @@ import { Argon2id } from 'oslo/password';
 import { users } from '~/db/schema';
 import { userMeta } from '../utils/auth';
 import { StatusCode } from '../types';
+import { db } from '../utils/db';
 
 export default defineEventHandler(async (event) => {
   const { email, password } = await readBody<UserLogin>(event);

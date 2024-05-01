@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import { users } from '~/db/schema';
 import { userMeta, verifyVerficationToken } from '../utils/auth';
 import { UnauthorizedError } from '../utils/errors';
+import { db } from '../utils/db';
 
 export default defineEventHandler(async (event) => {
   if (!event.context.session || !event.context.session.id) {

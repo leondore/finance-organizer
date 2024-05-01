@@ -134,12 +134,20 @@ const selectUserSchema = createSelectSchema(users, {
   roleId: true,
 });
 const selectRoleSchema = createSelectSchema(roles);
-const selectProfileSchema = createSelectSchema(profiles).pick({
+const selectProfileSchema = createSelectSchema(profiles, {
+  phone: (schema) => schema.phone.optional(),
+  avatarId: (schema) => schema.avatarId.optional(),
+}).pick({
   firstName: true,
   lastName: true,
+  phone: true,
+  avatarId: true,
 });
 const userSchema = selectUserSchema.merge(
-  z.object({ role: selectRoleSchema, name: selectProfileSchema })
+  z.object({
+    role: selectRoleSchema,
+    profile: selectProfileSchema,
+  })
 );
 
 // Types
