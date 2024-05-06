@@ -1,9 +1,8 @@
-import type { Role } from './auth';
-import { auth } from '../utils/auth';
+import type { Auth, Role } from './auth';
 
 declare module 'lucia' {
   interface Register {
-    Lucia: typeof auth;
+    Lucia: Auth;
     DatabaseSessionAttributes: SessionAttributes;
     DatabaseUserAttributes: UserAttributes;
   }

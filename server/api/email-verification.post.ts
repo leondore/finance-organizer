@@ -2,10 +2,15 @@ import { eq } from 'drizzle-orm';
 
 import { users } from '~/db/schema';
 import { userMeta, verifyVerficationToken } from '../utils/auth';
-import { UnauthorizedError } from '../utils/errors';
-import { db } from '../utils/db';
+import { ServerError, UnauthorizedError } from '../utils/errors';
 
 export default defineEventHandler(async (event) => {
+  const db = event.context.db;
+  const auth = event.context.auth;
+  if (!db || !auth) {
+    throw ServerError();
+  }
+
   if (!event.context.session || !event.context.session.id) {
     throw UnauthorizedError();
   }
@@ -20,7 +25,7 @@ export default defineEventHandler(async (event) => {
     throw ValidationError('Verification Code');
   }
 
-  const validCode = await verifyVerficationToken(user, code);
+  const validCode = await verifyVerficationToken(user, code, event);
   if (!validCode) {
     throw ValidationError('Verification Code');
   }

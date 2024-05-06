@@ -1,19 +1,16 @@
+import type { Database } from '../types';
 import postgres from 'postgres';
-import { type PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/postgres-js';
 
 import * as schema from '../../db/schema';
 
-const config = useRuntimeConfig();
+export function useDB(): Database {
+  const config = useRuntimeConfig();
 
-let pgsql: PostgresJsDatabase<typeof schema> | null = null;
-
-if (!pgsql) {
   if (typeof config.databaseUrl === 'undefined' || config.databaseUrl === '') {
-    throw new Error('Database URL is missing');
+    return null;
   }
 
   const client = postgres(config.databaseUrl);
-  pgsql = drizzle(client, { schema });
+  return drizzle(client, { schema });
 }
-
-export const db = pgsql;

@@ -5,9 +5,8 @@ import { generateId } from 'lucia';
 
 import { isValidEmail } from '../utils/helpers';
 import { profiles, users } from '~/db/schema';
-import { db } from '../utils/db';
 import { Role, StatusCode } from '../types';
-import { handleError, ValidationError } from '../utils/errors';
+import { handleError, ServerError, ValidationError } from '../utils/errors';
 import {
   generateAuthHandler,
   generateEmailVerificationToken,
@@ -20,6 +19,11 @@ const PWD_MAX_LENGTH = 256;
 const USER_ID_LENGTH = 15;
 
 export default defineEventHandler(async (event) => {
+  const db = event.context.db;
+  if (!db) {
+    throw ServerError();
+  }
+
   const { email, password, firstName, lastName } =
     await readBody<UserSignup>(event);
 

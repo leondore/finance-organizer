@@ -1,4 +1,5 @@
 import type { H3Event, H3EventContext } from 'h3';
+import type { Database } from '../types';
 
 import { Lucia, SessionAttributes, User, UserAttributes } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
@@ -6,7 +7,6 @@ import { eq } from 'drizzle-orm';
 import { alphabet, generateRandomString } from 'oslo/crypto';
 import { createDate, isWithinExpirationDate, TimeSpan } from 'oslo';
 
-import { db } from './db';
 import { users, sessions, emailVerificationTokens } from '~/db/schema';
 import { Role } from '../types';
 
@@ -37,9 +37,19 @@ const authHandlerParams = {
   },
 } as const;
 
-const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
+export const generateAuthHandler = (
+  database: Database
+): Lucia<
+  ReturnType<(typeof authHandlerParams)['getSessionAttributes']>,
+  ReturnType<(typeof authHandlerParams)['getUserAttributes']>
+> => {
+  if (!database) {
+    throw new Error('Database is required.');
+  }
 
-export const auth = new Lucia(adapter, authHandlerParams);
+  const adapter = new DrizzlePostgreSQLAdapter(database, sessions, users);
+  return new Lucia(adapter, authHandlerParams);
+};
 
 export const isAdmin = (context: H3EventContext) => {
   return context.user?.role === Role.Admin;
@@ -58,21 +68,15 @@ export const userMeta = (
   return { clientUserAgent, clientIp };
 };
 
-export const generateAuthHandler = (
-  database: typeof db
-): Lucia<
-  ReturnType<(typeof authHandlerParams)['getSessionAttributes']>,
-  ReturnType<(typeof authHandlerParams)['getUserAttributes']>
-> => {
-  const adapter = new DrizzlePostgreSQLAdapter(database, sessions, users);
-  return new Lucia(adapter, authHandlerParams);
-};
-
 export const generateEmailVerificationToken = async (
   userId: string,
   email: string,
-  database: typeof db = db
+  database: Database
 ): Promise<string> => {
+  if (!database) {
+    throw new Error('Database is required.');
+  }
+
   await database
     .delete(emailVerificationTokens)
     .where(eq(emailVerificationTokens.userId, userId));
@@ -118,8 +122,12 @@ export const sendEmailVerificationToken = async (
 
 export const verifyVerficationToken = async (
   user: User,
-  token: string
+  token: string,
+  event: H3Event
 ): Promise<boolean> => {
+  const db = event.context.db;
+  if (!db) return false;
+
   try {
     const [dbToken] = await db
       .select()

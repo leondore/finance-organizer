@@ -20,6 +20,14 @@ export const UnauthorizedError = (err?: unknown): H3Error => {
   });
 };
 
+export const ServerError = (err?: unknown): H3Error => {
+  return createError({
+    statusCode: StatusCode.InternalServerError,
+    statusMessage: 'Internal Server Error',
+    message: err instanceof Error ? err.message : String(err),
+  });
+};
+
 export function handleError(
   err: unknown,
   msg: string = 'Internal Server Error'
