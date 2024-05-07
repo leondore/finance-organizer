@@ -14,7 +14,11 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const auth = generateAuthHandler(event.context.db);
+    let auth = event.context.auth;
+    if (!auth) {
+      auth = generateAuthHandler(event.context.db);
+      event.context.auth = auth;
+    }
 
     const sessionId = getCookie(event, auth.sessionCookieName) ?? null;
     if (!sessionId) {
@@ -41,7 +45,6 @@ export default defineEventHandler(async (event) => {
 
     event.context.session = session;
     event.context.user = user;
-    event.context.auth = auth;
   } catch (error) {
     event.context.session = null;
     event.context.user = null;

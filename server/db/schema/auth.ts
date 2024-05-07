@@ -11,8 +11,6 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { createSelectSchema } from 'drizzle-zod';
-import { z } from 'zod';
 
 import { countries } from '.';
 
@@ -125,30 +123,3 @@ export const userSettings = pgTable(
     };
   }
 );
-
-// Zod Schemas
-const selectUserSchema = createSelectSchema(users, {
-  id: (schema) => schema.id.optional(),
-}).omit({
-  password: true,
-  roleId: true,
-});
-const selectRoleSchema = createSelectSchema(roles);
-const selectProfileSchema = createSelectSchema(profiles, {
-  phone: (schema) => schema.phone.optional(),
-  avatarId: (schema) => schema.avatarId.optional(),
-}).pick({
-  firstName: true,
-  lastName: true,
-  phone: true,
-  avatarId: true,
-});
-const userSchema = selectUserSchema.merge(
-  z.object({
-    role: selectRoleSchema,
-    profile: selectProfileSchema,
-  })
-);
-
-// Types
-export type User = z.infer<typeof userSchema>;

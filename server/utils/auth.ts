@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 import { alphabet, generateRandomString } from 'oslo/crypto';
 import { createDate, isWithinExpirationDate, TimeSpan } from 'oslo';
 
-import { users, sessions, emailVerificationTokens } from '~/db/schema';
+import { users, sessions, emailVerificationTokens } from '~/server/db/schema';
 import { Role } from '../types';
 
 const EMAIL_TOKEN_LENGTH = 8;

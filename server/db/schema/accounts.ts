@@ -13,7 +13,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import { currencies, tags, users } from '.';
-import { accountCategoryOptions } from '../../utils';
+import { accountCategoryOptions } from '../../../utils';
 
 // Enums
 export const accountCategoryEnum = pgEnum(

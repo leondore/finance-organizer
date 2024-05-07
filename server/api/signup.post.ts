@@ -4,7 +4,7 @@ import { Argon2id } from 'oslo/password';
 import { generateId } from 'lucia';
 
 import { isValidEmail } from '../utils/helpers';
-import { profiles, users } from '~/db/schema';
+import { profiles, users } from '~/server/db/schema';
 import { Role, StatusCode } from '../types';
 import { handleError, ServerError, ValidationError } from '../utils/errors';
 import {

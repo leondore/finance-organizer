@@ -3,7 +3,7 @@ import type { UserLogin } from '~/types';
 import { eq } from 'drizzle-orm';
 import { Argon2id } from 'oslo/password';
 
-import { users } from '~/db/schema';
+import { users } from '~/server/db/schema';
 import { userMeta } from '../utils/auth';
 import { StatusCode } from '../types';
 import { ServerError } from '../utils/errors';

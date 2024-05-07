@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 
-import { users } from '~/db/schema';
+import { users } from '~/server/db/schema';
 import { userMeta, verifyVerficationToken } from '../utils/auth';
 import { ServerError, UnauthorizedError } from '../utils/errors';
 

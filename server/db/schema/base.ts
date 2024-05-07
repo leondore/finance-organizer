@@ -9,7 +9,6 @@ import {
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { createSelectSchema } from 'drizzle-zod';
 
 import { users } from '.';
 
@@ -78,8 +77,3 @@ export const attachments = pgTable(
     };
   }
 );
-
-// Zod schemas
-export const selectCountrySchema = createSelectSchema(countries).omit({
-  id: true,
-});

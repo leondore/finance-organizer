@@ -14,7 +14,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import { accounts, attachments, currencies, tags, users } from '.';
-import { transactionType, transactionStatus } from '../../utils';
+import { transactionType, transactionStatus } from '../../../utils';
 
 // Enums
 export const transactionTypeEnum = pgEnum('transaction_type', transactionType);
