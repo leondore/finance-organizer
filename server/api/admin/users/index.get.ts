@@ -1,8 +1,6 @@
 import type { User } from '~/server/types';
 import { eq } from 'drizzle-orm';
 import { countries, profiles, roles, users } from '~/server/db/schema';
-import { ServerError } from '~/server/utils/errors';
-import admin from '~/server/utils/admin';
 
 export default defineEventHandler({
   onRequest: [admin],

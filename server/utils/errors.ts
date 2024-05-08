@@ -20,6 +20,14 @@ export const UnauthorizedError = (err?: unknown): H3Error => {
   });
 };
 
+export const EmailVerificationError = (err?: unknown): H3Error => {
+  return createError({
+    statusCode: StatusCode.BadRequest,
+    statusMessage: 'Email Verification Required',
+    message: err instanceof Error ? err.message : String(err),
+  });
+};
+
 export const ServerError = (err?: unknown): H3Error => {
   return createError({
     statusCode: StatusCode.InternalServerError,
