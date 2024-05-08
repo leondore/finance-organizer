@@ -4,6 +4,9 @@ import { profiles, roles, users, countries } from '.';
 
 const selectUserSchema = createSelectSchema(users, {
   id: (schema) => schema.id.optional(),
+  createdAt: (schema) => schema.createdAt.optional(),
+  updatedAt: (schema) => schema.updatedAt.optional(),
+  emailVerified: (schema) => schema.emailVerified.optional(),
 }).omit({
   password: true,
   roleId: true,
