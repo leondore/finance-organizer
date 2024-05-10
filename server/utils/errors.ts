@@ -44,6 +44,7 @@ export function handleError(
 
   if (err instanceof H3Error) {
     code = err.statusCode;
+    msg = err.statusMessage ?? msg;
   }
 
   return createError({

@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { countries, profiles, roles, users } from '~/server/db/schema';
-import { User } from '~/server/types';
+import { StatusCode, User } from '~/server/types';
 
 export default defineEventHandler({
   onRequest: [admin],
@@ -12,7 +12,7 @@ export default defineEventHandler({
 
     const id = getRouterParam(event, 'id');
     if (!id) {
-      throw ValidationError('ID');
+      throw ValidationError('Id');
     }
 
     try {
@@ -34,6 +34,15 @@ export default defineEventHandler({
         .innerJoin(roles, eq(users.roleId, roles.id))
         .innerJoin(profiles, eq(users.id, profiles.userId))
         .leftJoin(countries, eq(profiles.countryId, countries.id));
+
+      if (!user) {
+        throw createError({
+          statusCode: StatusCode.NotFound,
+          statusMessage: 'Not found.',
+          message: 'Could not retrieve user.',
+        });
+      }
+
       return user;
     } catch (err) {
       throw handleError(err);
