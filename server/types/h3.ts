@@ -1,5 +1,5 @@
 import type { Session, User } from 'lucia';
-import type { Database } from './general';
+import type { Database } from './base';
 import { Auth } from './auth';
 
 declare module 'h3' {

@@ -1,5 +1,7 @@
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import { z } from 'zod';
 import * as schema from '../db/schema';
+import { selectCountrySchema } from '../db/schema/zod';
 
 export type Database = PostgresJsDatabase<typeof schema> | null;
 
@@ -14,6 +16,8 @@ export enum StatusCode {
   Conflict = 409,
   InternalServerError = 500,
 }
+
+export type Country = z.infer<typeof selectCountrySchema>;
 
 export interface EmailOptions {
   to: string | string[];

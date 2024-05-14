@@ -5,10 +5,7 @@ import { countries, profiles, roles, users } from '~/server/db/schema';
 export default defineEventHandler({
   onRequest: [admin],
   handler: async (event) => {
-    const db = event.context.db;
-    if (!db) {
-      throw ServerError();
-    }
+    const db = event.context.db!;
 
     try {
       const results: User[] = await db

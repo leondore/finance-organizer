@@ -24,8 +24,8 @@ const selectProfileSchema = createSelectSchema(profiles, {
   avatarId: true,
 });
 
-export const selectCountrySchema = createSelectSchema(countries).omit({
-  id: true,
+export const selectCountrySchema = createSelectSchema(countries, {
+  id: (schema) => schema.id.optional(),
 });
 
 export const userSchema = selectUserSchema.merge(
