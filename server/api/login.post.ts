@@ -6,14 +6,10 @@ import { Argon2id } from 'oslo/password';
 import { users } from '~/server/db/schema';
 import { userMeta } from '../utils/auth';
 import { StatusCode } from '../types';
-import { ServerError } from '../utils/errors';
 
 export default defineEventHandler(async (event) => {
-  const db = event.context.db;
-  const auth = event.context.auth;
-  if (!db || !auth) {
-    throw ServerError();
-  }
+  const db = event.context.db!;
+  const auth = event.context.auth!;
 
   const { email, password } = await readBody<UserLogin>(event);
 

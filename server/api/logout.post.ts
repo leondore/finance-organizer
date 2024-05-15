@@ -1,11 +1,7 @@
 import { StatusCode } from '../types';
-import { ServerError } from '../utils/errors';
 
 export default defineEventHandler(async (event) => {
-  const auth = event.context.auth;
-  if (!auth) {
-    throw ServerError();
-  }
+  const auth = event.context.auth!;
 
   if (!event.context.session) {
     throw createError({

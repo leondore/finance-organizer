@@ -2,14 +2,11 @@ import { eq } from 'drizzle-orm';
 
 import { users } from '~/server/db/schema';
 import { userMeta, verifyVerficationToken } from '../utils/auth';
-import { ServerError, UnauthorizedError } from '../utils/errors';
+import { UnauthorizedError } from '../utils/errors';
 
 export default defineEventHandler(async (event) => {
-  const db = event.context.db;
-  const auth = event.context.auth;
-  if (!db || !auth) {
-    throw ServerError();
-  }
+  const db = event.context.db!;
+  const auth = event.context.auth!;
 
   if (!event.context.session || !event.context.session.id) {
     throw UnauthorizedError();
