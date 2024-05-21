@@ -1,30 +1,24 @@
-import { StatusCode, type Country } from '~/server/types';
+import type { Country } from '~/server/types';
 import { countries } from '~/server/db/schema';
+import { store } from '~/server/utils/resources';
 
 export default defineEventHandler({
   onRequest: [admin],
   handler: async (event) => {
-    const db = event.context.db!;
-
     const { code, name } = await readBody<Country>(event);
 
-    try {
-      const [newCountry] = await db
-        .insert(countries)
-        .values({ code, name })
-        .returning();
-
-      if (!newCountry) {
-        throw createError({
-          statusCode: StatusCode.NotFound,
-          statusMessage: 'Not found.',
-          message: 'Could not create country.',
-        });
+    const [error, newCountry] = await store<typeof countries, Country>(
+      event,
+      countries,
+      {
+        code,
+        name,
       }
-
-      return newCountry;
-    } catch (err) {
-      throw handleError(err);
+    );
+    if (error) {
+      throw handleError(error);
     }
+
+    return newCountry;
   },
 });

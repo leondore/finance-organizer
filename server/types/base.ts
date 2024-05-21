@@ -1,9 +1,5 @@
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { z } from 'zod';
-import * as schema from '../db/schema';
 import { selectCountrySchema } from '../db/schema/zod';
-
-export type Database = PostgresJsDatabase<typeof schema> | null;
 
 export enum StatusCode {
   OK = 200,
